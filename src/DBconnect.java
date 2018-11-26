@@ -1,6 +1,4 @@
-import oracle.jdbc.driver.OracleDriver;
 import java.sql.*;
-import java.util.Properties;
 
 public class DBconnect {
     private static String USERNAME = "CJD";
@@ -15,6 +13,7 @@ public class DBconnect {
     // 创建一个结果集对象
     private ResultSet rs = null;
 
+    /*
     public void AddData(String stuName, int gender, int age, String address) {
         connection = getConnection();
         // String sql =
@@ -80,13 +79,13 @@ public class DBconnect {
         } finally {
             ReleaseResource();
         }
-    }
+    } */
 
-    private Connection getConnection() {
+    public Connection getConnection() {
         try {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            System.out.println("成功连接数据库");
+            // System.out.println("成功连接数据库");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("class not find !", e);
         } catch (SQLException e) {
@@ -118,5 +117,38 @@ public class DBconnect {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getPassword(String id){
+        connection = getConnection();
+        String sql = "call GETADMINPASSWORD(?)";
+        try {
+            CallableStatement cstmt = null;
+            cstmt = connection.prepareCall("{?=call GETADMINPASSWORD(?)}");
+            cstmt.registerOutParameter(1, Types.VARCHAR);
+            cstmt.setString(2, id.trim());
+            cstmt.execute();
+            return cstmt.getString(1);
+        } catch (SQLException e){
+            // e.printStackTrace();
+            try {
+                CallableStatement cstmt = null;
+                cstmt = connection.prepareCall("{?=call GETPASSWORD(?)}");
+                cstmt.registerOutParameter(1, Types.VARCHAR);
+                cstmt.setString(2, id.trim());
+                cstmt.execute();
+                return cstmt.getString(1);
+            } catch (SQLException e1){
+                ErrorMessage eM = new ErrorMessage();
+                eM.show_error("无用户名");
+                e1.printStackTrace();
+            } finally {
+                ReleaseResource();
+            }
+        }
+        finally {
+            ReleaseResource();
+        }
+        return "";
     }
 }

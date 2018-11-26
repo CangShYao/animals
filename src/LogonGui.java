@@ -14,8 +14,24 @@ public class LogonGui {
         logonButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                UserGui userGui = new UserGui();
-                userGui.init();
+                System.out.println("尝试登录");
+                DBconnect dBconnect = new DBconnect();
+                String pd = dBconnect.getPassword(textField1.getText());
+                String pd2 = passwordField1.getText();
+                if (pd.equals(pd2))
+                {
+                    System.out.println("登录成功");
+                    UserGui userGui = new UserGui();
+                    userGui.init();
+                }
+                else {
+                    System.out.println("登录失败");
+                    if (pd.equals(""))
+                    {
+                        ErrorMessage eM = new ErrorMessage();
+                        eM.show_error("密码错误");
+                    }
+                }
             }
         });
         registerButton.addActionListener(new ActionListener() {
