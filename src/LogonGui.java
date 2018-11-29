@@ -15,10 +15,16 @@ public class LogonGui {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("尝试登录");
+                if (textField1.getText().equals("")){
+                    ErrorMessage eM = new ErrorMessage();
+                    eM.show_error("请输入用户名");
+                    System.out.println("登录失败");
+                    return;
+                }
                 DBconnect dBconnect = new DBconnect();
                 String pd = dBconnect.getPassword(textField1.getText());
                 String pd2 = passwordField1.getText();
-                if (pd.equals(pd2))
+                if (pd.equals(pd2) && !pd2.equals(""))
                 {
                     System.out.println("登录成功");
                     UserGui userGui = new UserGui();
@@ -26,18 +32,16 @@ public class LogonGui {
                 }
                 else {
                     System.out.println("登录失败");
-                    if (pd.equals(""))
-                    {
-                        ErrorMessage eM = new ErrorMessage();
-                        eM.show_error("密码错误");
-                    }
+                    ErrorMessage eM = new ErrorMessage();
+                    eM.show_error("密码错误");
                 }
             }
         });
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                ErrorMessage eM = new ErrorMessage();
+                eM.show_error("暂未开通");
             }
         });
     }
