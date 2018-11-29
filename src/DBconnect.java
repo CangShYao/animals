@@ -13,73 +13,6 @@ public class DBconnect {
     // 创建一个结果集对象
     private ResultSet rs = null;
 
-    /*
-    public void AddData(String stuName, int gender, int age, String address) {
-        connection = getConnection();
-        // String sql =
-        String sql = "select count(*) from student where 1 = 1";
-        String sqlStr = "insert into student values(?,?,?,?,?)";
-        int count = 0;
-
-        try {
-            pstm = connection.prepareStatement(sql);
-            rs = pstm.executeQuery();
-            while (rs.next()) {
-                count = rs.getInt(1) + 1;
-                System.out.println(rs.getInt(1));
-            }
-            // 执行插入数据操作
-            pstm = connection.prepareStatement(sqlStr);
-            pstm.setInt(1, count);
-            pstm.setString(2, stuName);
-            pstm.setInt(3, gender);
-            pstm.setInt(4, age);
-            pstm.setString(5, address);
-            pstm.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            ReleaseResource();
-        }
-    }
-
-    public void DeleteData(String stuName) {
-        connection = getConnection();
-        String sqlStr = "delete from student where stu_name=?";
-        System.out.println(stuName);
-        try {
-            // 执行删除数据操作
-            pstm = connection.prepareStatement(sqlStr);
-            pstm.setString(1, stuName);
-            pstm.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            ReleaseResource();
-        }
-    }
-
-    public void SelectData() {
-        connection = getConnection();
-        String sql = "select * from student where 1 = 1";
-        try {
-            pstm = connection.prepareStatement(sql);
-            rs = pstm.executeQuery();
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String name = rs.getString("stu_name");
-                String gender = rs.getString("gender");
-                String age = rs.getString("age");
-                String address = rs.getString("address");
-                System.out.println(id + "\t" + name + "\t" + gender + "\t"
-                        + age + "\t" + address);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            ReleaseResource();
-        }
-    } */
 
     public Connection getConnection() {
         try {
@@ -119,7 +52,7 @@ public class DBconnect {
         }
     }
 
-    public String getPassword(String id){
+    public String getPassword(String id) {
         connection = getConnection();
         String sql = "call GETADMINPASSWORD(?)";
         try {
@@ -129,7 +62,7 @@ public class DBconnect {
             cstmt.setString(2, id.trim());
             cstmt.execute();
             return cstmt.getString(1);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             // e.printStackTrace();
             try {
                 CallableStatement cstmt = null;
@@ -138,17 +71,65 @@ public class DBconnect {
                 cstmt.setString(2, id.trim());
                 cstmt.execute();
                 return cstmt.getString(1);
-            } catch (SQLException e1){
+            } catch (SQLException e1) {
                 ErrorMessage eM = new ErrorMessage();
                 eM.show_error("无用户名");
                 e1.printStackTrace();
             } finally {
                 ReleaseResource();
             }
-        }
-        finally {
+        } finally {
             ReleaseResource();
         }
         return "";
+    }
+
+    public void DeleteData(String id, String table) {
+        connection = getConnection();
+        String sqlStr = null;
+        switch (table){
+            case "ANIMAL":{
+                sqlStr = "DELETE FROM CJD.ANIMAL WHERE ANIMALID = ?";
+                break;
+            }
+            case "CENTER":{
+                sqlStr = "DELETE FROM CJD.CENTER WHERE CENTERID = ?";
+                break;
+            }
+            case "VACCINE":{
+                sqlStr = "DELETE FROM CJD.VACCINE WHERE VACCINEID = ?";
+                break;
+            }
+        }
+        try {
+            pstm = connection.prepareStatement(sqlStr);
+            pstm.setString(1, id);
+            int xx = pstm.executeUpdate();
+            if (xx == 1){
+                ErrorMessage em = new ErrorMessage();
+                em.show_error("删除成功");
+            }
+            else {
+                ErrorMessage em = new ErrorMessage();
+                em.show_error("删除失败");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            ReleaseResource();
+        }
+    }
+
+    public void SelectData(String id, String table) {
+        connection = getConnection();
+        String sqlStr = "SELECT * FROM CJD.? WHERE ?ID = ?";
+        try {
+            pstm = connection.prepareStatement(sqlStr);
+            rs = pstm.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            ReleaseResource();
+        }
     }
 }
